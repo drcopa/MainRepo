@@ -1336,6 +1336,17 @@
         <url>/apex/{!if($Setup.copado__Settings__c.copado__Namespace__c =&apos;none&apos;,&apos;&apos;,&apos;copado__&apos;)}UserStoryImportSelection</url>
     </webLinks>
     <webLinks>
+        <fullName>copado__Manage_Selenium_Tests</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Manage Selenium Tests</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>/apex/{!if($Setup.copado__Settings__c.copado__Namespace__c =&apos;none&apos;,&apos;&apos;,&apos;copado__&apos;)}ManageSeleniumTesting?usId={!copado__User_Story__c.Id}</url>
+    </webLinks>
+    <webLinks>
         <fullName>copado__Mass_Add_User_Stories</fullName>
         <availability>online</availability>
         <displayType>massActionButton</displayType>

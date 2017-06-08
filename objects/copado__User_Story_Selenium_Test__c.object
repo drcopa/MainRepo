@@ -44,58 +44,61 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <deprecated>false</deprecated>
-    <description>This object stores the permissions relating to a user per environment</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
     <enableHistory>false</enableHistory>
-    <enableReports>true</enableReports>
+    <enableReports>false</enableReports>
     <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
-        <fullName>copado__Allow_Deployments__c</fullName>
-        <defaultValue>true</defaultValue>
+        <fullName>copado__External_Id__c</fullName>
+        <caseSensitive>false</caseSensitive>
         <deprecated>false</deprecated>
-        <externalId>false</externalId>
-        <label>Allow Deployments</label>
+        <description>External Id for the User Story Selenium Test Manager.</description>
+        <externalId>true</externalId>
+        <label>External Id</label>
+        <length>255</length>
+        <required>false</required>
         <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
+        <type>Text</type>
+        <unique>true</unique>
     </fields>
     <fields>
-        <fullName>copado__Environment__c</fullName>
+        <fullName>copado__Selenium_Test_Group__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <label>Environment</label>
-        <referenceTo>copado__Environment__c</referenceTo>
-        <relationshipLabel>Branch Management Permissions</relationshipLabel>
-        <relationshipName>Branch_Management_Permissisions</relationshipName>
-        <relationshipOrder>0</relationshipOrder>
+        <label>Selenium Test Group</label>
+        <referenceTo>copado__Selenium_Test_Group__c</referenceTo>
+        <relationshipLabel>User Story Selenium Tests</relationshipLabel>
+        <relationshipName>User_Story_Selenium_Tests</relationshipName>
+        <relationshipOrder>1</relationshipOrder>
         <reparentableMasterDetail>false</reparentableMasterDetail>
         <trackTrending>false</trackTrending>
         <type>MasterDetail</type>
         <writeRequiresMasterRead>false</writeRequiresMasterRead>
     </fields>
     <fields>
-        <fullName>copado__User__c</fullName>
-        <deleteConstraint>SetNull</deleteConstraint>
+        <fullName>copado__User_Story__c</fullName>
         <deprecated>false</deprecated>
         <externalId>false</externalId>
-        <label>User</label>
-        <referenceTo>User</referenceTo>
-        <relationshipLabel>Branch Management Permissisions</relationshipLabel>
-        <relationshipName>Branch_Management_Permissisions</relationshipName>
-        <required>false</required>
+        <label>User Story</label>
+        <referenceTo>copado__User_Story__c</referenceTo>
+        <relationshipLabel>User Story Selenium Tests</relationshipLabel>
+        <relationshipName>User_Story_Selenium_Tests</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
         <trackTrending>false</trackTrending>
-        <type>Lookup</type>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
     </fields>
-    <label>Branch Management Permission</label>
+    <label>User Story Selenium Test</label>
     <nameField>
-        <displayFormat>BMP-{000000}</displayFormat>
-        <label>Branch Management Permission Ref</label>
-        <type>AutoNumber</type>
+        <label>User Story Selenium Test Name</label>
+        <type>Text</type>
     </nameField>
-    <pluralLabel>Branch Management Permissions</pluralLabel>
+    <pluralLabel>User Story Selenium Tests</pluralLabel>
     <searchLayouts/>
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
