@@ -4,4 +4,5 @@
     <label>Copado Permissioner</label>
     <logo>copado__Copado/copado__Copado_Logo.png</logo>
     <tab>copado__Persona__c</tab>
+    <tab>copado__Permission_Set_Explorer</tab>
 </CustomApplication>
