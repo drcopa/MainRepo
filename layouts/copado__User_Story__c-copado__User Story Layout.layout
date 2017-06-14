@@ -379,6 +379,7 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>copado__Promotion__c.NAME</fields>
         <fields>copado__Promotion__c.copado__Status__c</fields>
         <fields>copado__Promotion__c.copado__Source_Environment__c</fields>
         <fields>copado__Promotion__c.copado__Source_Org_Credential__c</fields>
