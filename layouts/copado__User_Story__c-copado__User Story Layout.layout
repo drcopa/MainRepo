@@ -449,6 +449,12 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>copado__Commits__c</fields>
+        <fields>copado__Changed_Files__c</fields>
+        <fields>copado__Target_Branch__c</fields>
+        <fields>copado__State__c</fields>
+        <fields>copado__URL_Link__c</fields>
+        <fields>copado__User_Avatar__c</fields>
         <relatedList>copado__Pull_Request__c.copado__User_Story__c</relatedList>
     </relatedLists>
     <relatedLists>
