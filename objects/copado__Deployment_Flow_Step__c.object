@@ -53,6 +53,16 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
+        <fullName>In_Sync__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Checked if there are no changes to Sync.</description>
+        <externalId>false</externalId>
+        <label>In Sync</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>copado__Automatically_Merge_and_Deploy__c</fullName>
         <defaultValue>false</defaultValue>
         <deprecated>false</deprecated>
