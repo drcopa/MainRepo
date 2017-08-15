@@ -25,7 +25,7 @@
     </dashboardGridLayout>
     <dashboardType>SpecifiedUser</dashboardType>
     <isGridLayout>true</isGridLayout>
-    <runningUser>{!Environment.DavidVEmail}b</runningUser>
+    <runningUser>dr@copa.do.prodb</runningUser>
     <textColor>#000000</textColor>
     <title>Demo Dashboard</title>
     <titleColor>#000000</titleColor>
