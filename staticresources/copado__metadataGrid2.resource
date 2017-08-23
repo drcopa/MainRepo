@@ -140,6 +140,9 @@ MetadataGrid2.prototype._reapplyFilters = function(tabIndex) {
     //console.debug('_reapplyFilters()', tabIndex, that.savedFilters);
     if(tabIndex === 0) {
         // Filter by TYPE
+        that.eltGrid.jqxGrid('setcolumnproperty', 's', 'filterable', true);
+        that.eltGrid.jqxGrid('removefilter', 's');
+        that.eltGrid.jqxGrid('applyfilters');
         if(that.savedFilters)
             that.eltGrid.jqxGrid('loadstate', that.savedFilters);
         that._setGridFiltersByType();
@@ -362,16 +365,20 @@ MetadataGrid2.prototype.render = function(cbAfterRender) {
             console.debug('MetadataGrid2: filter loading', that.filterByType);
             if(!that.filterByType)
                 return;
+
             document.body.focus();
             that.eltMetaDataTypeFilter.jqxComboBox({ disabled: true }); 
+            
             // detach the slow process.
             window.setTimeout(function() {
                 lockScreen();
+                // even if loadmetadata is never called, this will ensure the combo is enabled.
+                that.eltMetaDataTypeFilter.jqxComboBox({ disabled: false });
                 that.loadMetaData(function(error) {
                     console.debug('MetadataGrid2: filter done');
                     that.render();
                     unlockScreen();
-                    that.eltMetaDataTypeFilter.jqxComboBox({ disabled: false }); 
+                    that.eltMetaDataTypeFilter.jqxComboBox({ disabled: false });
 
                     // fire a custom event telling the selection changed.
                     var event = new CustomEvent("copadoMetadataGrid2TypeChanged", { detail: { metadataGrid2: this } });
