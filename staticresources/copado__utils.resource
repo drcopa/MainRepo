@@ -95,6 +95,11 @@ dw.u.retry = function(url, cb, postData, avoidRetry, onError) {
 };
 
 dw.u.getRemote = function(url, cb, postData, avoidRetry, onError, requestType) {
+    if(Copado_Licenses.hasMultiLicense && !(Copado_Licenses.hasCopado ||Copado_Licenses.hasCCM ||Copado_Licenses.hasCST) ) {
+        var errorMsgs = 'Your current license does not allow performing this action.';
+        alert(errorMsgs);
+        return;
+    }
 
     dw.u.getRemote.attempts++;
     sforce.connection.remoteFunction({

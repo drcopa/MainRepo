@@ -648,8 +648,6 @@ var copadoApp = {
         //
         var hasChanged = step.Name != newStep.name || step[copadoApp.ns + 'Type__c'] != newStep.type || step[copadoApp.ns + 'CheckOnly__c'] != newStep.check;
 
-
-
         if (hasChanged) {
             //updating local data by reference 
             step.Name = newStep.name;
@@ -856,7 +854,7 @@ var copadoApp = {
 
         $row.find('input.js-step-name').val(step.Name);
         $row.find('span.js-step-name').html(step.Name);
-        $row.find('input.js-step-check').attr('checked', step[copadoApp.ns + 'CheckOnly__c']);
+        $row.find('input.js-step-check').prop('checked', step[copadoApp.ns + 'CheckOnly__c']);
         $row.find('.js-step-type').val(step[copadoApp.ns + 'Type__c']);
 
         $row.find('.js-action-selectStep')
@@ -962,8 +960,8 @@ var copadoApp = {
             //copadoApp.lock();
             ga('send', 'event', 'Deployment', 'deploy');
             console.log('redirection! > ', window.location.protocol + '//' + window.location.host + '/apex/deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id)
-                //change to popup
-            location.href = window.location.protocol + '//' + window.location.host + '/apex/deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id;
+                //change to popup)
+            location.href = window.location.protocol + '//' + window.location.host + '/apex/deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id+'&jobsManagerMatchingKey=' + encodeURIComponent(copadoApp.jobsManagerMatchingKey);
         }
 
     },
@@ -991,7 +989,7 @@ var copadoApp = {
         $new.find('input.js-step-name').val(step.Name);
         $new.find('span.js-step-name').html(step.Name);
         $new.find('.js-step-type').val(step[copadoApp.ns + 'Type__c']);
-        $new.find('.js-step-check').attr('checked', step[copadoApp.ns + 'CheckOnly__c']).hide();
+        $new.find('.js-step-check').prop('checked', step[copadoApp.ns + 'CheckOnly__c']).hide();
         $new.find('.js-col-actions').attr('data-stepid', step.Id);
         $new.find('.js-step-type').attr('data-stepid', step.Id);
 
@@ -1183,7 +1181,7 @@ var copadoApp = {
                     console.log('update ui ', copadoApp.data.dep[copadoApp.ns + 'Status__c'], copadoApp.data.dep[copadoApp.ns + 'Flag_Status__c']);
                     $copado('[id$=ofStatus]').html(copadoApp.data.dep[copadoApp.ns + 'Status__c']);
                     $copado('[id$=ofCompleted]').html(copadoApp.data.dep[copadoApp.ns + 'Completed__c'] + ' %');
-                    $copado('.js-status-icon').html(copadoApp.data.dep[copadoApp.ns + 'Flag_Status__c']);
+                    $copado('.js-status-icon').attr('src',copadoApp.data.dep[copadoApp.ns + 'Flag_Status__c']);
 
                     if (copadoApp.data.dep[copadoApp.ns + 'Status__c'].indexOf('Completed') === 0) {
                         copadoApp.enabledBtn('[id$=btnDeploy]', copadoLabels.DEPLOY);
@@ -2124,7 +2122,6 @@ var copadoStep = {
     upsertSObjectStep: function(s, cb) {
 
         var step = new sforce.SObject(copadoApp.ns + "Step__c");
-
         step.Name = s.name;
         //step[copadoApp.ns+'Order__c'] = s.order;//$copado(rock.el(rock.stepUI.order)).val();
         step[copadoApp.ns + 'Type__c'] = s.type
@@ -2199,7 +2196,7 @@ var metadataGrid2, getMetadataGrid2 = function(type) {
         conf.server = {};
         conf.server.metadataUrl = rock.config.metadata_url;
         conf.attachmentName = 'MetaData';
-        console.info('buildGrid() start ', type);
+        console.info('buildGrid() start ', type, conf);
 
         if(metadataGrid2 && metadataGrid2.conf) {
             metadataGrid2.resetGrid(conf);
@@ -2247,7 +2244,7 @@ var metadataGrid2, getMetadataGrid2 = function(type) {
 
             // NR: workaround, since deploymentstep.unlock() gets called, unlocking the screen almost right away
             window.setTimeout(function() {
-                copadoApp.lock();
+                copadoApp.unlock();
                 metadataGrid2.loadData(function() {
                     metadataGrid2.render();
                     copadoApp.unlock();
@@ -3464,7 +3461,6 @@ rock.upsertStep = function(cb) {
     //step[copadoApp.ns+'Type__c'] = copadoStep.stepType
     //step[copadoApp.ns+'Deployment__c'] = rock..deploymentId;
     //step[copadoApp.ns+'CheckOnly__c'] = //$copado(rock.el(rock.stepUI.checkOnly)).is(':checked') ? true : false;
-
     console.log('TODO checkonly & order');
 
     step.Id = rock.stepId;
@@ -4211,8 +4207,8 @@ var copadoCSStep = {
         }
         console.log('get objects remote, force:', force)
         dw.u.getCachedRemote({
-            url: rock.config.sobjects_url,
-            name: 'Data',
+            url: rock.config.sobjects_url + '&onlyCustomSettings=true',
+            name: 'Custom Settings',
             force: force,
             parentId: copadoStep.orgId,
             success: function(res, date) {
@@ -4498,7 +4494,7 @@ var copadoGitPromotionStep = {
             showfilterrow: true,
             filterable: true,
             theme: 'base',
-            editable: false,
+            editable: rock.EditGitPromotion == "true",
             selectionmode: 'none',
             enablebrowserselection: true,
             pageable: true,
@@ -4512,6 +4508,7 @@ var copadoGitPromotionStep = {
                 columntype: 'checkbox',
                 filtertype: 'bool',
                 datafield: 's',
+                editable: rock.EditGitPromotion == "true",
                 width: 60
             }, {
                 text: 'Commit Info.',
@@ -4538,6 +4535,22 @@ var copadoGitPromotionStep = {
                 copadoApp.unlock();
             }
         });
+        if(me && rock.EditGitPromotion == "true") {
+            $grid2.on('cellvaluechanged', function (event) {
+                var local = rock.datasource.localdata;
+                var t = $grid2.jqxGrid('getrowdata', event.args.rowindex);
+                console.log('Applying selection chages to the grid...',t);
+                if (event.args.datafield=='s' && t.s === true) {
+                    t.s = true;
+                    
+                }else if(event.args.datafield=='s' && t.s === false){
+                    t.s = false;
+                }
+                local[event.args.rowindex] = t;
+                $grid2.jqxGrid('refresh');
+                $grid2.jqxGrid('applyfilters');
+            });
+        }
     },
 
 

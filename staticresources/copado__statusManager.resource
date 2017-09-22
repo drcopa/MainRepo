@@ -90,7 +90,6 @@ var statusManager = statusManager || {
                 "Content-Type": "text/json",
                 "userId": _temp_conf.userId,
                 "orgId": _temp_conf.orgId,
-                "sessionId": _temp_conf.sessionId,
                 "token": _temp_conf.token
             },
             method: "GET",
@@ -125,7 +124,7 @@ var statusManager = statusManager || {
         }
         return att;
     },
-    
+
     /**
      * reset the job status, clearing internal flags, the UI, and removing the attachment
      */
@@ -137,7 +136,8 @@ var statusManager = statusManager || {
         //delete attachment & notification
         var ids = [];
         if (me.attachmentId != '') ids.push(me.attachmentId);
-        if (me.notificationId && me.notificationId != '') ids.push(me.notificationId);
+        // NR: do not delete the notification
+        //if (me.notificationId && me.notificationId != '') ids.push(me.notificationId);
         var delResult = sforce.connection.deleteIds(ids);
 
         //update UI
@@ -372,7 +372,7 @@ var statusManager = statusManager || {
     },
     initialiseStreamingApi: function(sessionId) {
 
-        //to prevent multiple 
+        //to prevent multiple
         if (statusManager._hasBeenInitialized) return;
         statusManager._hasBeenInitialized = true;
 
@@ -389,7 +389,7 @@ var statusManager = statusManager || {
     * set the operationInProgress flag, create the PROGRESS_STATUS_COPADO attachment and calls the rest of the code that will call the Copado webhook
     * also locks the screen.
     **/
-    startProcess: function(callback, isParentId2) {
+    startProcess: function(callback, isParentId2, jobType) {
         console.assert(!isParentId2 || statusManager.parentId2,  'statusManager.startProcess: requested to monitor another parentId, but statusManager.parentId2 is empty');
         parentId = isParentId2? statusManager.parentId2 :statusManager.parentId;
         console.assert(parentId,  'statusManager.startProcess: No parentId ( or parentId2 ) defined.');
@@ -412,7 +412,7 @@ var statusManager = statusManager || {
             statusManager.setStatusComplete();
             throw new Error("error: "+msg);
         };
-        var payload = '{"isFinished":false,"type":"n/a","status":"Sending request..."}';
+        var payload = '{"isFinished":false,"type":"'+(jobType||'n/a')+'","status":"Sending request..."}';
         var so = new sforce.SObject("Attachment");
         so.ParentId = parentId;
         so.Name = statusManager.fileName;

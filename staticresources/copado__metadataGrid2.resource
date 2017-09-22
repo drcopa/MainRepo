@@ -455,17 +455,24 @@ MetadataGrid2.prototype.render = function(cbAfterRender) {
     });
 
     if(this.conf.gridMode === 'gitCommit') {
-        this.eltGrid.on('cellvaluechanged', function (event) {
+        
+        this.eltGrid.on('cellvaluechanged', function (event) {            
             // hack: if the col clicked is r, check the selection as well
             var t = that.eltGrid.jqxGrid('getrowdata', event.args.rowindex);
-            if (event.args.datafield=='r' && t.r === true) {
-                t.s = true;
+            
+            if (event.args.datafield=='r' && t.r === true && t.s === false) {
+                that.eltGrid.jqxGrid('setcellvalue', event.args.rowindex, "s", true);
+                that.eltGrid.jqxGrid('setcellvalue', event.args.rowindex, "r", true);
             }
-            if (event.args.datafield=='s' && t.r === true) {
-                t.r = false;
+            else if(event.args.datafield=='r' && t.r === false && t.s === true) {
+                that.eltGrid.jqxGrid('setcellvalue', event.args.rowindex, "r", false);
             }
-            that.eltGrid.jqxGrid('refresh');
-            that.eltGrid.jqxGrid('applyfilters');
+            else if (event.args.datafield=='s' && t.r === true && t.s === false) {
+               that.eltGrid.jqxGrid('setcellvalue', event.args.rowindex, "r", false);
+               that.eltGrid.jqxGrid('setcellvalue', event.args.rowindex, "s", false);
+            }
+            //that.eltGrid.jqxGrid('refreshdata');
+            //that.eltGrid.jqxGrid('applyfilters');
             that._setSelectionState(t.s, [t], true, t);
         });
     }

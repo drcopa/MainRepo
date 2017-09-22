@@ -29,6 +29,8 @@ app.callBackEnd = function(commitId){
         location.href='/'+ (app.conf.data.userStoryId || app.conf.data.snapshotId );
     }, false);
 
+    // first tell the global job manager, THEN, call the status mgr.
+    statusManager.lastAttachment = globalJobsManagerStart(app.conf.data.snapshotId, 'GitCommit', 'GIT-'+app.conf.data.repositoryId+'-'+app.conf.data.branch);
     statusManager.startProcess(function() {
         var msg = encodeURIComponent($copado('.js-message').val());
         dw.u.getRemote(app.conf.server.commitUrl.replace('__COMMITID__',commitId).replace('__MSG__',msg),function(res){
@@ -83,11 +85,11 @@ app.doCommit = function(){
         unlockScreen();
         return;
     }
-    if( !(elt_commitMessage.value||'').trim()) {
-        alert(copadoPageLabels.ENTER_COMMIT_MESSAGE);
-        unlockScreen();
-        return;
-    }
+	if( !(elt_commitMessage.value||'').trim()) {
+		alert(copadoPageLabels.ENTER_COMMIT_MESSAGE);
+		unlockScreen();
+		return;
+	}
     //create record
     var commitId = app.createCommitSObject();
 
@@ -172,26 +174,26 @@ app.init = function(conf){
         metadataGrid2 = new MetadataGrid2(conf);
 
     var QueryString = function () {
-        // This function is anonymous, is executed immediately and
-        // the return value is assigned to QueryString!
-        var query_string = {};
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i=0;i<vars.length;i++) {
+      // This function is anonymous, is executed immediately and
+      // the return value is assigned to QueryString!
+      var query_string = {};
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i=0;i<vars.length;i++) {
         var pair = vars[i].split("=");
-        // If first entry with this name
+            // If first entry with this name
         if (typeof query_string[pair[0]] === "undefined") {
-        query_string[pair[0]] = decodeURIComponent(pair[1]);
-        // If second entry with this name
+          query_string[pair[0]] = decodeURIComponent(pair[1]);
+            // If second entry with this name
         } else if (typeof query_string[pair[0]] === "string") {
-        var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
-        query_string[pair[0]] = arr;
-        // If third or later entry with this name
+          var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+          query_string[pair[0]] = arr;
+            // If third or later entry with this name
         } else {
-        query_string[pair[0]].push(decodeURIComponent(pair[1]));
+          query_string[pair[0]].push(decodeURIComponent(pair[1]));
         }
-        }
-        return query_string;
+      }
+      return query_string;
     }();
 
     // note: can be null
@@ -200,36 +202,36 @@ app.init = function(conf){
 
     // override loading selected metadata, since git commit has none (except the metadata preselection)
     metadataGrid2.loadSelectedMetaData = function(callbackFinished) {
-        // if this comes
-        if(QueryString.MetadataPreselectionId) {
+            // if this comes
+            if(QueryString.MetadataPreselectionId) {
             var savedItems = dw.u.getAttachById(QueryString.MetadataPreselectionId);
-            console.debug("gitCommit: MetadataPreselectionId=", QueryString.MetadataPreselectionId, savedItems);
-            if(savedItems) {
-                savedItems = Base64.decode(savedItems[0].Body);
-                savedItems = $copado.parseJSON(savedItems);
-            }else{
-                alert("Could not load selections from other User Story commits.");
-            }
+                console.debug("gitCommit: MetadataPreselectionId=", QueryString.MetadataPreselectionId, savedItems);
+                if(savedItems) {
+                    savedItems = Base64.decode(savedItems[0].Body);
+                    savedItems = $copado.parseJSON(savedItems);
+                }else{
+                    alert("Could not load selections from other User Story commits.");
+                }
             setWithoutRebinding(metadataGrid2.selectedMetadata, savedItems);
-        }
+            }
         if(callbackFinished)
             callbackFinished();
-    };
+};
 
     metadataGrid2.render(function() {
         console.info("MetadataGrid2:init grid rendered", conf);
         // leave the datasource available for save
         app.datasource = metadataGrid2.datasource;
-
-        lockScreen();
+            
+            lockScreen();
         metadataGrid2.loadData(function() {
             console.info("MetadataGrid2:init grid data loaded");
             metadataGrid2.render();
-            unlockScreen();
-        });
-    });
+                                unlockScreen();
+                        });
+                    });
 
     app.refreshMetadataTypes = function() { metadataGrid2.refreshMetadataTypes(); };
-};
+    };
 
 }(gitCommit)); //end closure

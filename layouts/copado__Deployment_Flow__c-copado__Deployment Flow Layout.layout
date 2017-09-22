@@ -39,24 +39,12 @@
                 <behavior>Edit</behavior>
                 <field>copado__Equal_Branch_Environment_Name__c</field>
             </layoutItems>
-        </layoutColumns>
-        <style>TwoColumnsTopToBottom</style>
-    </layoutSections>
-    <layoutSections>
-        <customLabel>true</customLabel>
-        <detailHeading>true</detailHeading>
-        <editHeading>true</editHeading>
-        <label>Deployment Flow</label>
-        <layoutColumns>
             <layoutItems>
-                <height>500</height>
-                <page>copado__DeploymentFlowConnections</page>
-                <showLabel>false</showLabel>
-                <showScrollbars>true</showScrollbars>
-                <width>100%</width>
+                <behavior>Edit</behavior>
+                <field>copado__Static_Code_Analysis_Settings__c</field>
             </layoutItems>
         </layoutColumns>
-        <style>OneColumn</style>
+        <style>TwoColumnsTopToBottom</style>
     </layoutSections>
     <layoutSections>
         <customLabel>true</customLabel>

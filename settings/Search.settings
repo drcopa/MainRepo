@@ -200,7 +200,7 @@
             <enhancedLookupEnabled>false</enhancedLookupEnabled>
             <lookupAutoCompleteEnabled>false</lookupAutoCompleteEnabled>
             <name>copado__Copado_Notification__c</name>
-            <resultsPerPageCount>0</resultsPerPageCount>
+            <resultsPerPageCount>25</resultsPerPageCount>
         </searchSettingsByObject>
         <searchSettingsByObject>
             <enhancedLookupEnabled>false</enhancedLookupEnabled>
@@ -536,6 +536,12 @@
             <enhancedLookupEnabled>false</enhancedLookupEnabled>
             <lookupAutoCompleteEnabled>false</lookupAutoCompleteEnabled>
             <name>copado__User_Story_Selenium_Test__c</name>
+            <resultsPerPageCount>0</resultsPerPageCount>
+        </searchSettingsByObject>
+        <searchSettingsByObject>
+            <enhancedLookupEnabled>false</enhancedLookupEnabled>
+            <lookupAutoCompleteEnabled>false</lookupAutoCompleteEnabled>
+            <name>copado__User_Story_Task__c</name>
             <resultsPerPageCount>0</resultsPerPageCount>
         </searchSettingsByObject>
         <searchSettingsByObject>

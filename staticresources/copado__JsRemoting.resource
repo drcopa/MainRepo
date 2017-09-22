@@ -24,8 +24,8 @@ JsRemoting.attachments.getAttachmentByFileName = function(parentId, name){
 JsRemoting.attachments.getDecodedAttachment = function(parentId, name){
     var a = JsRemoting.attachments.getAttachmentByFileName(parentId, name);
     if(!a.length)return null;
-    a.Body = Base64.decode(a[0].Body);
-    return a;
+    a[0].Body = Base64.decode(a[0].Body);
+    return a[0];
 };
 JsRemoting.attachments.getDecodedAttachmentById = function(id){
     var q = 'Select Id, Body, BodyLength, LastModifiedDate, Name, ParentId From Attachment where id=\''+id+'\' limit 1';

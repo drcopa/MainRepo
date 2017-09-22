@@ -25,6 +25,10 @@ var apexTestResult = {
 
     maxretries: 30,
     retries: 0,
+
+    triggersWithoutCoverage: 0,
+    classesWithoutCoverage: 0,
+    failingMethods: 0,
     
     showErrorMessage: function(){
         var me = apexTestResult;
@@ -48,6 +52,9 @@ var apexTestResult = {
         userStory[me.ns+'Apex_Code_Coverage__c'] = me.userStoryCoverage;
         userStory.Id = copadoApp.userStoryId;
         userStory[me.ns+'Has_Apex_Code__c'] = me.hasApexCode;
+        userStory[me.ns+'Classes_Without_Coverage__c'] = me.classesWithoutCoverage;
+        userStory[me.ns+'Triggers_Without_Coverage__c'] = me.triggersWithoutCoverage;
+        userStory[me.ns+'Failing_Methods__c'] = me.failingMethods;
         result = sforce.connection.update([userStory]);
         if (result[0].getBoolean("success")) {
             console.log('User Story successfully updated.');
@@ -355,6 +362,15 @@ var apexTestResult = {
                 progress:  c
             }
 
+            if (booly && row.coverageStatus == copadoLabels.FAILED) {
+                if (sourceName=='classCoverageResults') {
+                    me.classesWithoutCoverage++;
+                }
+                else {
+                    me.triggersWithoutCoverage++;
+                }
+            }
+
             result.push(row);
             console.log('create coverage array', classRes);
             me.addCoverageData(classRes, booly);
@@ -427,6 +443,10 @@ var apexTestResult = {
                 row['msg'] = methods[j].message;
                 row['success'] = (methods[j].success)?'Passed':'Failed';
                 result.push(row);
+
+                if (row.success == 'Failed') {
+                    me.failingMethods++;
+                }
             }
         }
     },
@@ -502,7 +522,6 @@ var apexTestResult = {
 // because you can controll better when it will be executed
 apexTestResult.init =  function(){
     console.info('apexTestResult.init');
-
     if(copadoApp.userStoryId!='')$copado('runTestsTab').show();
     apexTestResult._init();
     $grid_class = $copado('<div>');
