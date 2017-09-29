@@ -1,17 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
-    <labels>
-        <fullName>East_Resource</fullName>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>East Resource</shortDescription>
-        <value>East Resource</value>
-    </labels>
-    <labels>
-        <fullName>West_Resource</fullName>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>West Resource</shortDescription>
-        <value>West Resource</value>
-    </labels>
 </CustomLabels>
