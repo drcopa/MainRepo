@@ -1,0 +1,10 @@
+<apex:page >
+    <html>
+        <h1>
+            {!$Label.East_Resource}
+        </h1>
+        <h2>
+            {!$Label.West_Resource}
+        </h2>
+    </html>
+</apex:page>
