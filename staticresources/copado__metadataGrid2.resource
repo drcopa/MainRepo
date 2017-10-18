@@ -595,6 +595,8 @@ MetadataGrid2.prototype.loadMetaData = function(callbackFinished, forceRefresh) 
     url = this.filterByType ? url + '&type=' + (this.filterByType||'') + '&scalable=true' : url;
     if(this.conf.gridMode==='Users') {
         url = this.conf.users_url;
+    }else if(this.conf.gridMode==='metadataselector') {
+        url = rock.config.metadata_url;
     }
     console.debug('MetadataGrid2.loadMetaData', "force?"+forceRefresh, conf.data.orgId, this.filterByType, url);
 
