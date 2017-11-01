@@ -3390,8 +3390,8 @@ rock.mergeSavedMeta = function(metaOrgData, dataStep) {
 
         for (initialIndex; initialIndex < len; initialIndex++) {
             var el = arr[initialIndex];
-
-            if (el.n === n && el.t === t) {
+            // NR: added .toLowerCase() to make a case insensitve name comparison
+            if (el.n.toLowerCase() === n.toLowerCase() && el.t === t) {
                 this.initialIndex = initialIndex;
                 return initialIndex;
             }
