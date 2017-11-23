@@ -76,4 +76,8 @@
         <name>copado__Copado_Selenium_Testing</name>
         <type>CustomApplication</type>
     </appMenuItems>
+    <appMenuItems>
+        <name>copado__Copado_Compliance_Hub</name>
+        <type>CustomApplication</type>
+    </appMenuItems>
 </AppMenu>

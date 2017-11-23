@@ -313,7 +313,7 @@ urlCallout.template.paramRow = function(rowNumber, keyPair){
     var n = keyPair?keyPair[0]:'';
     var v = keyPair?keyPair[1]:'';
     if(typeof datasetup === "undefined"){
-        var btn = '<button id="del-param-'+rowNumber+'" onclick="urlCallout.param.deleteRow('+rowNumber+'); return false;" class="btn">Delete</button';
+        var btn = '<button id="del-param-'+rowNumber+'" onclick="urlCallout.param.deleteRow('+rowNumber+'); return false;" class="btn copado-lightning">Delete</button';
         var nameField =   '<input type="text" class="js-param" id="param-'+rowNumber+'-name" data-type="name" data-al="'+rowNumber+'" value="'+n+'" />';
         var valueField = '<input type="text" class="js-param" id="param-'+rowNumber+'-value" data-type="value" data-al="'+rowNumber+'" value="'+v+'" />';
         var wrapper = '<div id="paramWrapper-'+rowNumber+'" style="clear:both;">'+nameField+valueField+btn+'</div>';
@@ -331,7 +331,7 @@ urlCallout.template.headerRow = function(rowNumber, keyPair){
     var n = keyPair?keyPair[0]:'';
     var v = keyPair?keyPair[1]:'';
     if(typeof datasetup === "undefined"){
-        var btn = '<button id="del-header-'+rowNumber+'" onclick="urlCallout.header.deleteRow('+rowNumber+'); return false;" class="btn">Delete</button';
+        var btn = '<button id="del-header-'+rowNumber+'" onclick="urlCallout.header.deleteRow('+rowNumber+'); return false;" class="btn copado-lightning">Delete</button';
         var nameField =   '<input type="text" class="js-header" id="header-'+rowNumber+'-name" data-type="name" data-al="'+rowNumber+'" value="'+n+'" />';
         var valueField = '<input type="text" class="js-header" id="header-'+rowNumber+'-value" data-type="value" data-al="'+rowNumber+'" value="'+v+'" />';
         var wrapper = '<div id="headerWrapper-'+rowNumber+'" style="clear:both;">'+nameField+valueField+btn+'</div>';

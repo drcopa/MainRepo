@@ -43,41 +43,86 @@ var apexTestResult = {
         if(!isNaN(cc)){
             me.userStoryCoverage = Math.floor(cc);
         }
+        console.log('FLS check',me.userStory[me.ns+"Failing_Methods__c"]);
+        var queryFields = [me.ns+"Apex_Code_Coverage__c", me.ns+"Failing_Methods__c", me.ns+"Triggers_Without_Coverage__c", me.ns+"Has_Apex_Code__c", me.ns+"Classes_Without_Coverage__c"];
+        var validFields = me.flsCheck(queryFields);
+
+        var soql = "Select Id, Name, "+validFields.join()+" FROM " +me.ns+"User_Story__c WHERE Id='"+copadoApp.userStoryId+"' limit 1";
+        console.debug('updateUserStory() soql=', soql);
         
-        if(me.userStory[me.ns+'Apex_Code_Coverage__c'] == me.userStoryCoverage && me.hasApexCode == me.userStory[me.ns+'Has_Apex_Code__c']){
-            console.log('User Story does not need updating.');
-            return false;
+        var oldResult = sforce.connection.query(soql);
+        usRecord = oldResult.getArray("records")[0];
+
+        var changes = {};
+        // NOTE: this will fail if any of this fields have no FLS for the current user.
+
+        // check if number b differs from usRecord[name] and if so, add the value to the changes dict.
+        var numbersDiffer = function(name, b, changes) {
+            var a = usRecord[me.ns+name];
+            a = a&&!isNaN(a)?a:0;
+            b = b&&!isNaN(b)?b:0;
+            console.debug("numbersDiffer()2", name, b, a, changes);
+            if(a != b) {
+                changes[me.ns+name] = b;
+            }
+        };
+        // check if bool b differs from usRecord[name] and if so, add the value to the changes dict.
+        var booleanDiffer = function(name, b, changes) {
+            var a = usRecord[me.ns+name];
+            a = a&&a!=='false'?1:0;
+            b = b&&b!=='false'?1:0;
+            console.debug("booleanDiffer()2", name, b, a, changes);
+            if(a != b) {
+                changes[me.ns+name] = b;
+            }
+        };
+
+        numbersDiffer('Apex_Code_Coverage__c', me.userStoryCoverage, changes);
+        numbersDiffer('Classes_Without_Coverage__c', me.classesWithoutCoverage, changes);
+        numbersDiffer('Triggers_Without_Coverage__c', me.triggersWithoutCoverage, changes);
+        numbersDiffer('Failing_Methods__c', me.failingMethods, changes);
+        booleanDiffer('Has_Apex_Code__c', me.hasApexCode, changes);
+        var hasChanges = Object.keys(changes).length>0;
+        
+        /*
+        if(usRecord[me.ns+'Apex_Code_Coverage__c'] !== undefined && parseInt(usRecord[me.ns+'Apex_Code_Coverage__c']) !== me.userStoryCoverage && !isNaN(me.userStoryCoverage)){
+            changes[me.ns+'Apex_Code_Coverage__c'] = !isNaN(me.userStoryCoverage) ? me.userStoryCoverage : 0;
+            change = true;
         }
-        var userStory = new sforce.SObject(me.ns+'User_Story__c');
-        userStory[me.ns+'Apex_Code_Coverage__c'] = me.userStoryCoverage;
-        userStory.Id = copadoApp.userStoryId;
-        userStory[me.ns+'Has_Apex_Code__c'] = me.hasApexCode;
-        userStory[me.ns+'Classes_Without_Coverage__c'] = me.classesWithoutCoverage;
-        userStory[me.ns+'Triggers_Without_Coverage__c'] = me.triggersWithoutCoverage;
-        userStory[me.ns+'Failing_Methods__c'] = me.failingMethods;
-        result = sforce.connection.update([userStory]);
-        if (result[0].getBoolean("success")) {            
-            
-            var checkCookie = me.getCookie('ApexTestRunning');
-            console.log('User Story successfully updated.',checkCookie);            
-            if(checkCookie === "true" ){
-                // Replace static message with Salesforce custom Label for v10
-                var t = confirm('User Story successfully updated with apex test results. Would you like to refresh the page?'); // Replace this with a custom label for v10.
-                if(t){
-                    me.setCookie('ApexTestRunning',null,0);
-                    parent ? parent.location.reload() : location.reload();
-                } else{
-                    me.setCookie('ApexTestRunning',null,0);
-                } 
-            } else if(checkCookie != false) {
-               me.setCookie('ApexTestRunning',null,0);
-            }                    
+        if(usRecord[me.ns+'Has_Apex_Code__c'] !== undefined && usRecord[me.ns+'Has_Apex_Code__c'] !== me.hasApexCode.toString()){
+            changes[me.ns+'Has_Apex_Code__c'] = me.hasApexCode;
+            change = true;
         }
-        else{
-            console.error('User Story could not be updated.');
-            me.setCookie('ApexTestRunning',null,0);
+        if(usRecord[me.ns+'Classes_Without_Coverage__c'] !== undefined && parseInt(usRecord[me.ns+'Classes_Without_Coverage__c']) !== me.classesWithoutCoverage){
+            changes[me.ns+'Classes_Without_Coverage__c'] = me.classesWithoutCoverage;
+            change = true;
         }
+        
+        if(usRecord[me.ns+'Triggers_Without_Coverage__c'] !== undefined && parseInt(usRecord[me.ns+'Triggers_Without_Coverage__c']) !== me.triggersWithoutCoverage){
+            changes[me.ns+'Triggers_Without_Coverage__c'] = me.triggersWithoutCoverage;
+            change = true;
+        }
+        if(usRecord[me.ns+'Failing_Methods__c'] !== undefined && parseInt(usRecord[me.ns+'Failing_Methods__c']) !== me.failingMethods && me.failingMethods !== undefined){
+            changes[me.ns+'Failing_Methods__c'] = me.failingMethods;
+            change = true;
+        }
+        */
+        console.debug(JSON.stringify(changes));
+        window.parent.postMessage({"from":"apexTestResult", "hasChanges":hasChanges, "change":changes}, "*");
     },
+
+    flsCheck: function(fields){
+        var me = apexTestResult;
+        var validFields = [];
+        for(var i = 0; i< fields.length; i++){
+            console.log('FLS check:::',fields[i],me.userStory[fields[i]]);
+            if(me.userStory[fields[i]] !== undefined){
+                validFields.push(fields[i]);
+            }
+        }
+        return validFields;
+    },
+
     updateEnvironmentCodeCoverage: function(){
         var me = apexTestResult;
         if(copadoApp.envId && !isNaN(me.orgCoverage)) {
@@ -239,6 +284,7 @@ var apexTestResult = {
         //if there is not apex selected in the userStory
         if(me.userStoryClassesArray.length==0){
             alert(copadoLabels.NO_APEX_TESTS_FOUND);
+            me.setCookie('ApexTestRunning',null,0);
             return false;
         }
 
@@ -267,6 +313,7 @@ var apexTestResult = {
             }
             if(me.testClassesArray.length==0){
                 alert(copadoLabels.NO_APEX_TESTS_FOUND);
+                me.setCookie('ApexTestRunning',null,0);
                 $copado('#divPBbuttonsLoading').hide();
                 apexTestsButton.attr('value', copadoLabels.RUN_APEX_TESTS);
                 apexTestsButton.attr('disabled', false);
@@ -292,6 +339,7 @@ var apexTestResult = {
                 if(uniqueNameSpaceName=='')uniqueNameSpaceName = me.testClassesArray[z].ns;
                 if(uniqueNameSpaceName!='' && me.testClassesArray[z].ns!=uniqueNameSpaceName){
                     alert(copadoLabels.APEX_TESTS_BELONG_TO_MULTIPLE_NAMESPACES);
+                    me.setCookie('ApexTestRunning',null,0);
                     return;
                 }
             }
@@ -505,12 +553,18 @@ var apexTestResult = {
     },
     getUserStory: function(){
         var me = apexTestResult;
-        var result = sforce.connection.query("Select Id, "+me.ns+"Has_Apex_Code__c, "+me.ns+"Apex_Code_Coverage__c from "+me.ns+"User_Story__c where Id='"+copadoApp.userStoryId+"' limit 1");
+
+        // NOTE: this will fail if any of this fields have no FLS for the current user.
+        var soql = ("Select Id, {Co}Has_Apex_Code__c, {Co}Apex_Code_Coverage__c, "+
+            " {Co}Classes_Without_Coverage__c, {Co}Triggers_Without_Coverage__c, {Co}Failing_Methods__c"+
+            " from {Co}User_Story__c where Id='"+copadoApp.userStoryId+"' limit 1").replace(/\{Co\}/g, me.ns);
+        console.warn(soql);
+        var result = sforce.connection.query(soql);
         var records = result.getArray("records");
         if(records.length == 1)me.userStory = records[0];
     },
     _init: function(){
-        var me = apexTestResult;        
+        var me = apexTestResult;
         if(copadoApp.attachmentId == null || copadoApp.attachmentId=='' && copadoApp.userStoryId == ''){
             me.showErrorMessage();
             $copado('#errorMessage').show();
@@ -720,7 +774,13 @@ apexTestResult.init =  function(){
         if(!isNaN(apexTestResult.userStoryCoverage)){
             $copado('.jstxt_userStoryCoverage').text(Math.floor(apexTestResult.userStoryCoverage)+'%');
         }
-        apexTestResult.updateUserStory(apexTestResult.userStoryCoverage);
+        var url_string = location.href;
+        var url = new URL(url_string);
+        var reload = url.searchParams.get("rl");
+        
+        if(location.href.indexOf('sfdcIFrameHost=web') < 0 && reload === null){
+            apexTestResult.updateUserStory(apexTestResult.userStoryCoverage);        
+        }
         $copado('#summaryUserStory').show();
     }
     else{

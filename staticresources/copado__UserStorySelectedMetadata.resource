@@ -293,19 +293,56 @@ var USselectedMetadata = USselectedMetadata || {};
                 selectedTypes[t.t]=1;
         }
 
-        // this creates a semicolon-separated list with the keys of selectedTypes
-        var strSelectedTypes = Object.keys(selectedTypes).join('; ');
+        var compareArrays = function(array1, array) {
+            // if the other array is a falsy value, return
+            if (!array)
+                return false;
 
-        var userStory = new sforce.SObject(app.conf.ns+"User_Story__c");
-        userStory.Id = app.conf.data.userStoryId;
-        userStory[app.conf.ns+'Metadata_Types_in_Selection__c'] = strSelectedTypes;
-        console.debug('updating Metadata_Types_in_Selection__c', strSelectedTypes);
-        result = sforce.connection.update([userStory]);
-        if (result[0].getBoolean("success")) {
-            console.log('User Story successfully updated.');
-        }
-        else{
-            console.error('User Story could not be updated.');
+            // compare lengths - can save a lot of time 
+            if (array1.length != array.length)
+                return false;
+
+            for (var i = 0, l=array1.length; i < l; i++) {
+                // Check if we have nested arrays
+                if (array1[i] instanceof Array && array[i] instanceof Array) {
+                    // recurse into the nested arrays
+                    if (!array1[i].equals(array[i]))
+                        return false;       
+                }           
+                else if (array1[i] != array[i]) { 
+                    // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                    return false;   
+                }           
+            }       
+            return true;
+        };
+
+        // this creates a semicolon-separated list with the keys of selectedTypes
+        var setofSelectedType = Object.keys(selectedTypes);
+        setofSelectedType.sort();
+        var changes = {};
+        try{
+            var oldResult = sforce.connection.query("Select Id, Name, "+app.conf.ns+"Metadata_Types_in_Selection__c"+ " FROM " +app.conf.ns+"User_Story__c WHERE Id='"+app.conf.data.userStoryId+"' limit 1");
+            usRecord = oldResult.getArray("records")[0];
+            var t = usRecord[app.conf.ns+'Metadata_Types_in_Selection__c'];
+            var setOfUserStoryTypes = t? t.split(/\s*;\s*/g) : [];
+            setOfUserStoryTypes.sort();
+            
+            var areThereDifferences= (setofSelectedType || setOfUserStoryTypes) && !compareArrays(setofSelectedType, setOfUserStoryTypes);
+            
+            console.log('userStorySelectedMetadata:::', areThereDifferences, setofSelectedType, setOfUserStoryTypes);
+
+            if( areThereDifferences ) {
+                // NOTE: it must be null in order to clear the multipicklist Metadata_Types_in_Selection__c. Empty string wont do.
+                changes[app.conf.ns+'Metadata_Types_in_Selection__c'] = setofSelectedType&&setofSelectedType.length?setofSelectedType.join(';'):null;
+                console.log('userStorySelectedMetadata: sending to update', changes);
+                window.parent.postMessage({"from":"userStorySelectedMetadata", "hasChanges":true, "change":changes}, "*");
+            } else {
+                window.parent.postMessage({"from":"userStorySelectedMetadata", "hasChanges":false, "change":changes}, "*");
+            }
+        } catch(e){
+            window.parent.postMessage({"from":"userStorySelectedMetadata", "hasChanges":false, "change":changes}, "*");
+            console.error(e);
         }
     },
 

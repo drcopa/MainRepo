@@ -64,6 +64,18 @@
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>copado__Block_Commits__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>If checked, committing changes on user stories linked to this deployment flow will not be allowed.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, committing changes on user stories linked to this deployment flow will not be allowed.</inlineHelpText>
+        <label>Block Commits</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>copado__Branch_Management_Coordinates__c</fullName>
         <deprecated>false</deprecated>
         <description>This field is used to store the Branch Management Step locations of each box. This field should not be added to the page layout.</description>
@@ -197,6 +209,24 @@ IF($Setup.copado__Settings__c.copado__Namespace__c=&apos;none&apos;,&apos;&apos;
     </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
+    <webLinks>
+        <fullName>copado__Find_Replace_Rule_Editor</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>page</linkType>
+        <masterLabel>Find &amp; Replace Rule Editor</masterLabel>
+        <openType>newWindow</openType>
+        <page>copado__Flow_FindAndReplaceEditor</page>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+    </webLinks>
     <webLinks>
         <fullName>copado__Manage_Branches</fullName>
         <availability>online</availability>

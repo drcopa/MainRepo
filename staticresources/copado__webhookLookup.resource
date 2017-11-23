@@ -34,7 +34,7 @@ webhookLookup.templateRow = function(i, row){
         '<td>'+
             '<a id="whn-'+i+'" href="javascript:void(0)" onclick="webhookLookup.showLookupField(\''+row.referTo+'\', \''+row.url+'\');">'+row.name+'</a>'+
         '</td>'+
-        '<td><span id="whd-'+i+'">'+row.description+'</span></td>'+
+        '<td style="white-space: pre-wrap;"><span id="whd-'+i+'">'+row.description+'</span></td>'+
         '<td><a id="whdl-'+i+'" href="'+row.documentationLink+'" data-ref="webhookNameLink" target="_blank">'+webhookLookup.config.VIEW_DOCUMENTATION+'</a></td>'+
     '</tr>';
     return _row;

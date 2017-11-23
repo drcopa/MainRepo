@@ -10,6 +10,17 @@
         <label>Enabled</label>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>copado__Text_Field__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Text Field</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
     <label>Copado Setting</label>
     <pluralLabel>Copado Settings</pluralLabel>
     <visibility>Public</visibility>

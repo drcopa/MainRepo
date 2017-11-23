@@ -54,9 +54,17 @@ var copadoApp = {
 
     cancel: function() {
         if (rock.config.cancel_url) {
-            location.href = rock.config.cancel_url;
+            if( (typeof sforce != 'undefined') && sforce && (!!sforce.one) ) {
+                sforce.one.navigateToURL(rock.config.cancel_url);
+            } else {
+                location.href = rock.config.cancel_url;
+            }
         } else {
-            window.history.back();
+            if( (typeof sforce != 'undefined') && sforce && (!!sforce.one) ) {
+                sforce.one.back();
+            } else {
+                window.history.back();
+            }
         }
     },
 
@@ -354,7 +362,7 @@ var copadoApp = {
         var $container = $copado('#stepResult');
         var _namespace = (copadoApp.ns!='')?copadoApp.ns+'__':'';
         var newWindowUrl = '/apex/'+_namespace+'DeploymentJobResults?jobId='+jobId+'&deploymentId='+copadoApp.data.dep.Id+'&stepName='+stepName+'&orgName='+destination;
-        var resultsNewWindowLink = '&nbsp;&nbsp;<button id="btnShowResultsPopout" class="btn" onclick="window.open(\''+newWindowUrl+'\');" >Show results in new window</button>';
+        var resultsNewWindowLink = '&nbsp;&nbsp;<button id="btnShowResultsPopout" class="copado-lightning" onclick="window.open(\''+newWindowUrl+'\');" >Show results in new window</button>';
         var m = '<div class="co-stepResultTitle">'+copadoLabels.RESULTS_FOR_STEP_AND_DESTINATION_ORG + resultsNewWindowLink+'</div>';
         m = m
             .replace('STEP_NAME', stepName)
@@ -552,7 +560,13 @@ var copadoApp = {
     },
 
     mirrorBlockHeight: function() {
+        var statusHeight = $copado('div[id$="pbStatus"]').height();
+        var infoHeight = $copado('div[id$="pbInformation"]').height();
+        if(parseInt(statusHeight) <= parseInt(infoHeight)){
         $copado('div[id$="pbStatus"]').height($copado('div[id$="pbInformation"]').height());
+        } else{
+            $copado('div[id$="pbInformation"]').height($copado('div[id$="pbStatus"]').height());
+        }
     },
 
     getStepDataFromEl: function($el) {
@@ -948,7 +962,7 @@ var copadoApp = {
 
     deploy: function() {
 
-
+        var _namespace = (copadoApp.ns!='')?copadoApp.ns+'__':'';
         console.log('deploy', copadoApp.dirty);
         if (copadoApp.dirty) {
             copadoApp.redirectToDeploy = true;
@@ -959,9 +973,9 @@ var copadoApp = {
         } else {
             //copadoApp.lock();
             ga('send', 'event', 'Deployment', 'deploy');
-            console.log('redirection! > ', window.location.protocol + '//' + window.location.host + '/apex/deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id)
+            console.log('redirection! > ', window.location.protocol + '//' + window.location.host + '/apex/'+_namespace+'deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id)
                 //change to popup)
-            location.href = window.location.protocol + '//' + window.location.host + '/apex/deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id+'&jobsManagerMatchingKey=' + encodeURIComponent(copadoApp.jobsManagerMatchingKey);
+            location.href = window.location.protocol + '//' + window.location.host + '/apex/'+_namespace+'deploymentWizard?_ui=2&gotoStep=deploynow&id=' + copadoApp.data.dep.Id+'&jobsManagerMatchingKey=' + encodeURIComponent(copadoApp.jobsManagerMatchingKey);
         }
 
     },
@@ -1191,8 +1205,10 @@ var copadoApp = {
 
                     if (copadoApp.data.dep[copadoApp.ns + 'Status__c'] != '' || copadoApp.data.dep[copadoApp.ns + 'Status__c'] != 'Draft') {
                         $copado('#btnViewStatus').show();
+                        copadoApp.mirrorBlockHeight();
                     } else {
                         $copado('#btnViewStatus').hide();
+                        copadoApp.mirrorBlockHeight();
                     }
                     cb && cb();
                 }
@@ -2667,7 +2683,10 @@ var copadoGrid = {
     usersDataDateCache: false,
 
     initCallBack: function(metaOrgData, cachedDate) {
-
+        if(metaOrgData === undefined) {
+            console.warn("Deployment.Metadata initCallBack(): no metaOrgData? correcting");
+            metaOrgData = [];
+        }
         console.log('init initCallBack', metaOrgData.length, cachedDate);
         console.time('get saved data');
         var dataStep = dw.u.getSavedStepData(copadoStep.stepType);
@@ -3194,9 +3213,10 @@ var copadoGitMetadataStep = {
 
         var me = copadoGitMetadataStep,
             ns = copadoApp.ns;
+        var _namespace = (copadoApp.ns!='')?copadoApp.ns+'__':'';
 
         //prepare url parameters
-        var url = '/apex/GitCommitLookup?from=Deployment&callback=copadoGitMetadataStep.lookupCB';
+        var url = '/apex/'+_namespace+'GitCommitLookup?from=Deployment&callback=copadoGitMetadataStep.lookupCB';
         url += '&repository=' + me.data.repository;
         url += '&branch=' + me.data.branch;
         url += '&commitId=' + me.data.commitId;
@@ -3369,7 +3389,10 @@ rock.selectedNames = rock.selectedNames || [];
 
 
 rock.mergeSavedMeta = function(metaOrgData, dataStep) {
-
+    if(!metaOrgData.length) {
+        console.warn('No metadata loaded, so no need to merge anything');
+        return [];
+    }
 
     var len = dataStep.length;
 
@@ -3559,7 +3582,11 @@ var copadoMTStep = {
             job.Id = jobId;
             console.log('perform dml job', job);
             var result = sforce.connection.update([job]);
-            console.log('res update', result)
+            console.log('res update', result);
+            if(!result[0].getBoolean("success")){
+                copadoApp.showMessage('ERROR', result[0].errors.message);
+                throw result[0].errors.message;
+            }
             copadoApp.getJobs();
             copadoApp.startStatusChecker();
             copadoApp.showMessage('CONFIRM', 'Manual Task updated.');
@@ -3570,7 +3597,7 @@ var copadoMTStep = {
         }
     },
 
-    commentPopupHTML: '<div style="text-align:center" > <b>__LEAVE_A_COMMENT__</b> </div> <div> <textarea id=mt-comment cols="40" style="margin:5px; height:60px" placeholder="__LEAVE_A_COMMENT_PLASEHOLDER__ "></textarea> <br> <div style="text-align:center" ><button  id=mt-comment-ok>__SAVE_AND_CLOSE__</button> </div> </div>',
+    commentPopupHTML: '<div style="text-align:center" > <b>__LEAVE_A_COMMENT__</b> </div> <div> <textarea id=mt-comment cols="28" style="margin:5px; height:60px" placeholder="__LEAVE_A_COMMENT_PLASEHOLDER__ "></textarea> <div style="text-align:center" ><button class="copado-lightning" id=mt-comment-ok>__SAVE_AND_CLOSE__</button> </div> </div>',
 
     openCommentPopup: function(jobId) {
         copadoApp.data.jobIdsToSkipRedraw.push(jobId);
@@ -3615,7 +3642,7 @@ var copadoMTStep = {
                 },*/
 
                 width: 320,
-                height: 140,
+                height: 160,
                 showCloseButton: false,
                 draggable: false
                     //okButton: $btnOk
@@ -3673,7 +3700,7 @@ var copadoMTStep = {
         html += '<option value="Success" ' + (status === 'Success' ? 'selected=selected' : '') + '>Complete</option>';
         html += '<option value="Failed" ' + (status === 'Failed' ? 'selected=selected' : '') + '>Incomplete</option>';
         html += '</select> ';
-        html += '<button onclick="copadoMTStep.openCommentPopup(\'' + jobId + '\');return false;">' + copadoLabels.UPDATE_BUTTON + '</button>';
+        html += '<button class="copado-lightning" onclick="copadoMTStep.openCommentPopup(\'' + jobId + '\');return false;">' + copadoLabels.UPDATE_BUTTON + '</button>';
 
         return html;
     },
@@ -4740,9 +4767,10 @@ var copadoGitPromotionStep = {
 
         var me = copadoGitPromotionStep,
             ns = copadoApp.ns;
-
+        var _namespace = (copadoApp.ns!='')?copadoApp.ns+'__':'';
+        
         //prepare url parameters
-        var url = '/apex/GitCommitLookup?from=Deployment&callback=copadoGitPromotionStep.lookupCB';
+        var url = '/apex/'+_namespace+'GitCommitLookup?from=Deployment&callback=copadoGitPromotionStep.lookupCB';
         url += '&repository=' + me.data.repository;
         url += '&branch=' + me.data.branch;
         url += '&commitId=' + me.data.commitId;
