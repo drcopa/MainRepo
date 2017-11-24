@@ -232,7 +232,7 @@ MetadataGrid2.prototype._getColumnsByGridMode = function() {
             filtertype: 'bool',
             datafield: 's',
             width: 60
-        }, {text: copadoLabels.RETRIEVE_ONLY, columntype: 'checkbox', filtertype: 'bool', datafield: 'r', width: 85 }, {
+        }, {text: copadoLabels.RETRIEVE_ONLY, columntype: 'checkbox', filterable: false, datafield: 'r', width: 85 }, {
             text: copadoLabels.name,
             filtertype: 'textbox',
             filtercondition: 'contains',

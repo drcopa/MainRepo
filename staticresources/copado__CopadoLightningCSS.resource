@@ -115,6 +115,13 @@ HTML {
     color : rgb(62, 62, 60) !important;
 }
 
+.autoCompleteBoxScrolling {
+    transform: translateX(0%) !important;
+    width: 45% !important;
+}
+#cke_publisherRichTextEditor_autoCompleteBoxId{
+    width: 45% !important;
+}
 .mainTitle {
     font-size: 16px !important;
 }
@@ -123,7 +130,6 @@ HTML {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
 }
-
-.jqx-widget-header, .jqx-tabs-header, .jqx-grid-column-header, .jqx-grid-cell-pinned, .jqx-fill-state-pressed, .jqx-fill-state-normal, .jqx-grid-cell-filter {
-    background-color: #FFF !important;
-}
+.jqx-widget-header, .jqx-tabs-header, .jqx-grid-column-header, .jqx-grid-cell-pinned, .jqx-fill-state-pressed, .jqx-fill-state-normal, .jqx-grid-cell-filter {      
+    background-color: #FFF !important;        
+ } 
