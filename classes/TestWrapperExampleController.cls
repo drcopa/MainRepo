@@ -17,5 +17,13 @@ private class TestWrapperExampleController {
         // check that there is at least one account
         Integer accSize=ctrl.getAccounts().size();
         System.assert(accSize>=1);
+        
+        List<WrapperExampleController.RowWrapper> rows = ctrl.getRowWrappers();
+		System.assertEquals(4, rows.size());
+		
+        System.assertEquals(accSize, rows[0].values.size());
+        
+        // the number of column headings should be the same as the number of accounts
+        System.assertEquals(accSize, ctrl.getHeadWrap().values.size());
     }
 }
