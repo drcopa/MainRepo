@@ -26,4 +26,20 @@ private class TestWrapperExampleController {
         // the number of column headings should be the same as the number of accounts
         System.assertEquals(accSize, ctrl.getHeadWrap().values.size());
     }
+    
+    public static testMethod void testWrapperSize() {
+        // create an account so that there is at least one available
+        Account accA = new Account(Name='Unit Test 1', 
+                                 BillingStreet='AlexanderPlatz',
+                                 BillingCity='Berlin',
+                                 BillingPostalCode='10178');
+        insert accA;
+        
+        // instantiate the controller
+        WrapperExampleController ctrl = new WrapperExampleController();
+        
+        // check that there is at least one account
+        Integer accSize = ctrl.getAccounts().size();
+        System.assert(accSize>=1);
+    }
 }
