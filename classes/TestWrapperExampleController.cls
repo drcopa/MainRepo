@@ -6,9 +6,9 @@ private class TestWrapperExampleController {
     public static testMethod void testController() {
         // create an account so that there is at least one available
         Account acc1=new Account(Name='Unit Test 1', 
-                                 BillingStreet='Unit Test Street',
-                                 BillingCity='Unit Testville',
-                                 BillingPostalCode='UTEST1 1UT');
+                                 BillingStreet='East Village',
+                                 BillingCity='New York City',
+                                 BillingPostalCode='10009');
         insert acc1;
         
         // instantiate the controller
